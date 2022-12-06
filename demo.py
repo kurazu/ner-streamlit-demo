@@ -78,9 +78,7 @@ st.markdown("# NER Demo")
 
 nlp = get_nlp()
 
-if st.button("Get a different random email"):
-    subject, body = get_random_email()
-elif "subject" not in st.session_state:
+if st.button("Get a different random email") or "subject" not in st.session_state:
     subject, body = get_random_email()
     st.session_state["subject"] = subject
     st.session_state["body"] = body
