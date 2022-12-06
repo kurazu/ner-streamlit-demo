@@ -1,0 +1,8 @@
+streamlit
+spacy>=3.0.0,<4.0.0
+en_core_web_trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.4.1/en_core_web_trf-3.4.1-py3-none-any.whl
+
+black
+mypy
+isort
+flake8
