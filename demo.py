@@ -62,18 +62,31 @@ def remove_tags(text: str) -> str:
     return text.replace(START_TAG, "").replace(END_TAG, "")
 
 
+def get_random_email() -> tuple[str, str]:
+    random_file_path = random.choice(get_all_filepaths())
+    with get_zipfile() as zf:
+        with zf.open(random_file_path, "r") as f:
+            msg = cast(
+                email.message.EmailMessage,
+                email.message_from_binary_file(f, policy=email.policy.default),
+            )
+            default_subject, default_body = map(remove_tags, _get_email_body(msg))
+    return default_subject, default_body
+
+
 st.markdown("# NER Demo")
 
 nlp = get_nlp()
 
-random_file_path = random.choice(get_all_filepaths())
-with get_zipfile() as zf:
-    with zf.open(random_file_path, "r") as f:
-        msg = cast(
-            email.message.EmailMessage,
-            email.message_from_binary_file(f, policy=email.policy.default),
-        )
-        default_subject, default_body = map(remove_tags, _get_email_body(msg))
+if st.button("Get a different random email"):
+    subject, body = get_random_email()
+elif "subject" not in st.session_state:
+    subject, body = get_random_email()
+    st.session_state["subject"] = subject
+    st.session_state["body"] = body
+else:
+    subject = st.session_state["subject"]
+    body = st.session_state["body"]
 
 
 def process_ner(text: str) -> None:
@@ -86,11 +99,11 @@ def process_ner(text: str) -> None:
 
 st.markdown("## Input email subject")
 
-subject = st.text_input(label="Email subject", value=default_subject)
+subject = st.text_input(label="Email subject", value=subject)
 
 st.markdown("## Input email body")
 
-body = st.text_area(label="Email body", value=default_body, height=300)
+body = st.text_area(label="Email body", value=body, height=300)
 
 st.markdown("## Processed email subject")
 
